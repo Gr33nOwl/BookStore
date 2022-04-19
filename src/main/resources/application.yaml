@@ -1,0 +1,39 @@
+spring:
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 20
+        jdbc.batch_size: 20
+    defer-datasource-initialization: true
+
+  datasource:
+    url: jdbc:h2:mem:bookstoredb
+    #tcp: jdbc:h2:tcp://localhost:9092/mem:bookstoredb
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+
+  jackson:
+    visibility:
+      field: any
+      getter: none
+      setter: none
+      is-getter: none
+
+logging:
+  level:
+    root: WARN
+    com.github.gr33nowl.bookstore: DEBUG
+    org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
+
+server.servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
