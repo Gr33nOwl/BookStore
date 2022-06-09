@@ -6,8 +6,8 @@ import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -44,7 +44,7 @@ public class User extends BaseEntity {
     @Column(name = "registered", nullable = false, columnDefinition = "timestamp default now()", updatable = false)
     @NotNull
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Date registered = new Date();
+    private LocalDateTime registered = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles",
@@ -54,7 +54,7 @@ public class User extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
-    public User(Integer id, String email, String firstName, String lastName, String password, Date registered, Set<Role> roles) {
+    public User(Integer id, String email, String firstName, String lastName, String password, LocalDateTime registered, Set<Role> roles) {
         super(id);
         this.email = email;
         this.firstName = firstName;
