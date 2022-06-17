@@ -48,7 +48,8 @@ VALUES (1, 1),
 
 INSERT INTO USER_ROLES (role, user_id)
 VALUES ('USER', 1),
-       ('ADMIN', 2);
+       ('ADMIN', 1),
+       ('USER', 2);
 
 
 INSERT INTO BOOK_GENRES (genre, book_id)

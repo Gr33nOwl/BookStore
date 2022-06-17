@@ -1,6 +1,9 @@
 package com.github.gr33nowl.bookstore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +17,7 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,25 +25,26 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Book extends BaseEntity {
+public class Book extends BaseEntity{
 
     @Column(name = "title", nullable = false)
     @NotBlank
     @Size(max = 256)
     private String title;
 
-    @ManyToMany
+    @JsonIgnoreProperties("books")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private Set<Author> authors;
+    private Set<Author> authors = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "book_genres",
             joinColumns = @JoinColumn(name = "book_id"))
     @Column(name = "genre")
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<Genre> genres;
+    private Set<Genre> genres = new HashSet<>();
 
     @Column(name = "publication_date", nullable = false, updatable = false)
     @NotNull
@@ -58,9 +63,11 @@ public class Book extends BaseEntity {
     @Min(0)
     private int amount;
 
-    public Book(Integer id, String title, Set<Genre> genres, LocalDate publicationDate, double price, int amount) {
+
+    public Book(Integer id, String title,Set<Author> authors, Set<Genre> genres, LocalDate publicationDate, double price, int amount) {
         super(id);
         this.title = title;
+        this.authors = authors;
         setGenres(genres);
         this.publicationDate = publicationDate;
         this.price = price;
