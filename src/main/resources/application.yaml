@@ -3,7 +3,7 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -39,4 +39,5 @@ server.servlet:
 server:
   error:
     include-message: always
+    include-binding-errors: always
 

@@ -27,9 +27,9 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAll() {
+    public ResponseEntity<List<User>> getAll() {
         log.info("getAll");
-        return service.getAll();
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
@@ -47,7 +47,9 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody User user) {
         log.info("create {}", user);
-        if(!user.isNew()) { throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User id is not null"); }
+        if (!user.isNew()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User id is not null");
+        }
         User created = service.save(user);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/users/{id}").buildAndExpand(created.getId()).toUri();
@@ -58,7 +60,9 @@ public class UserController {
     public ResponseEntity<User> update(@PathVariable int id, @Valid @RequestBody User user) {
         log.info("update {} with id {}", user, id);
         Optional<User> userToUpdate = service.getById(id);
-        if(userToUpdate.isEmpty()) {throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User to update is not found");}
+        if (userToUpdate.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User to update is not found");
+        }
         service.save(user);
         return ResponseEntity.noContent().build();
     }
@@ -67,7 +71,9 @@ public class UserController {
     public ResponseEntity<User> delete(@PathVariable int id) {
         log.info("delete {}", id);
         Optional<User> userToDelete = service.getById(id);
-        if(userToDelete.isEmpty()) {throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User to delete is not found");}
+        if (userToDelete.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User to delete is not found");
+        }
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

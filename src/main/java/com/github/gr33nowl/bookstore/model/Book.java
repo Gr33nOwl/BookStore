@@ -1,13 +1,13 @@
 package com.github.gr33nowl.bookstore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.CollectionUtils;
 
@@ -25,7 +25,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Book extends BaseEntity{
+public class Book extends BaseEntity {
 
     @Column(name = "title", nullable = false)
     @NotBlank
@@ -33,7 +33,7 @@ public class Book extends BaseEntity{
     private String title;
 
     @JsonIgnoreProperties("books")
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
@@ -44,18 +44,19 @@ public class Book extends BaseEntity{
             joinColumns = @JoinColumn(name = "book_id"))
     @Column(name = "genre")
     @ElementCollection(fetch = FetchType.EAGER)
+    @JoinColumn(name = "book_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Genre> genres = new HashSet<>();
 
     @Column(name = "publication_date", nullable = false, updatable = false)
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDate publicationDate;
 
     @Column(name = "price", nullable = false)
     @NotNull
     @DecimalMin("0.1")
-    @DecimalMax("100.0")
+    @DecimalMax("500.0")
     private double price;
 
     @Column(name = "amount", nullable = false)
@@ -64,7 +65,7 @@ public class Book extends BaseEntity{
     private int amount;
 
 
-    public Book(Integer id, String title,Set<Author> authors, Set<Genre> genres, LocalDate publicationDate, double price, int amount) {
+    public Book(Integer id, String title, Set<Author> authors, Set<Genre> genres, LocalDate publicationDate, double price, int amount) {
         super(id);
         this.title = title;
         this.authors = authors;

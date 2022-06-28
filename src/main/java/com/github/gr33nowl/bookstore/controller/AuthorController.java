@@ -26,9 +26,9 @@ public class AuthorController {
     }
 
     @GetMapping
-    public List<Author> getAll() {
+    public ResponseEntity<List<Author>> getAll() {
         log.info("getAll");
-        return service.getAll();
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
@@ -38,9 +38,9 @@ public class AuthorController {
     }
 
     @GetMapping("/{id}/with-books")
-    public Author getWithBooks(@PathVariable int id) {
+    public ResponseEntity<Author> getWithBooks(@PathVariable int id) {
         log.info("getWithBooks {}", id);
-        return service.getWithBooks(id);
+        return ResponseEntity.of(service.getWithBooks(id));
     }
 
     @GetMapping("/by-firstname-and-lastname")
@@ -53,7 +53,9 @@ public class AuthorController {
     @PostMapping()
     public ResponseEntity<Author> create(@Valid @RequestBody Author author) {
         log.info("create {}", author);
-        if(!author.isNew()) { throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Author id is not null"); }
+        if (!author.isNew()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Author id is not null");
+        }
         Author created = service.save(author);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("api/authors/{id}").buildAndExpand(created.getId()).toUri();
@@ -64,7 +66,9 @@ public class AuthorController {
     public ResponseEntity<Author> update(@PathVariable int id, @Valid @RequestBody Author author) {
         log.info("update {} with id {}", author, id);
         Optional<Author> authorToUpdate = service.getById(id);
-        if(authorToUpdate.isEmpty()) {throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Author to update is not found");}
+        if (authorToUpdate.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Author to update is not found");
+        }
         service.save(author);
         return ResponseEntity.noContent().build();
     }
@@ -73,7 +77,9 @@ public class AuthorController {
     public ResponseEntity<Author> delete(@PathVariable int id) {
         log.info("delete {}", id);
         Optional<Author> authorToDelete = service.getById(id);
-        if(authorToDelete.isEmpty()) {throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Author to delete is not found");}
+        if (authorToDelete.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Author to delete is not found");
+        }
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

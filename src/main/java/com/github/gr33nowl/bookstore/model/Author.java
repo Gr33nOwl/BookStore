@@ -2,6 +2,8 @@ package com.github.gr33nowl.bookstore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -10,12 +12,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "authors")
+@Table(name = "authors", uniqueConstraints = {@UniqueConstraint(columnNames = {"first_name", "last_name"})})
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Author extends BaseEntity{
+public class Author extends BaseEntity {
 
     @Column(name = "first_name", nullable = false)
     @NotBlank
@@ -28,7 +30,8 @@ public class Author extends BaseEntity{
     private String lastName;
 
     @JsonIgnoreProperties("authors")
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, mappedBy = "authors")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "authors")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Book> books = new HashSet<>();
 
     public Author(Integer id, String firstName, String lastName) {
